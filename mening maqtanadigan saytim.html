@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CineSpot — Anime va Kinolar</title>
+<style>
+:root{
+ --bg:#070817;--panel:#101226;--card:#11152b;
+ --text:#f8f7ff;--muted:#a5a8c1;--border:#292d4b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+ background:radial-gradient(circle at 15% 10%,#44106b33,transparent 35%),var(--bg);
+ color:var(--text);font-family:Arial,sans-serif;transition:.3s;
+}
+body.light{--bg:#eef0fa;--panel:#fff;--card:#fff;--text:#17172b;--muted:#626b7d;--border:#dce1ed}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0}
+header{
+ min-height:80px;padding:15px 3%;display:flex;align-items:center;
+ justify-content:space-between;gap:15px;flex-wrap:wrap;
+ background:#0d1020ed;border-bottom:1px solid var(--border);
+ position:sticky;top:0;z-index:20;backdrop-filter:blur(15px)
+}
+.logo{font-size:29px;font-weight:900;white-space:nowrap}
+.logo span{color:#a64bff}
+.top-search{width:min(35%,480px)}
+.top-search input,.search-area input{
+ width:100%;padding:15px;border-radius:13px;
+ border:1px solid var(--border);background:var(--card);
+ color:var(--text);outline:none
+}
+.top-search input:focus,.search-area input:focus{border-color:#a855f7;box-shadow:0 0 15px #9333ea55}
+.header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.header-actions button,.header-actions select{
+ padding:12px 14px;border:1px solid var(--border);
+ border-radius:11px;background:var(--card);color:var(--text)
+}
+.premium-btn{background:linear-gradient(120deg,#ff9d00,#f04435)!important;color:white!important}
+.login-btn{background:linear-gradient(120deg,#8228ff,#5315df)!important;color:white!important}
+.user-label{color:var(--muted);font-size:13px}
+.container{width:94%;max-width:1600px;margin:auto}
+
+/* HERO */
+.hero{
+ min-height:330px;margin:25px 0;padding:35px 4%;
+ border:1px solid #762bdb;border-radius:25px;
+ background:radial-gradient(ellipse at 80% 50%,#5715a966,transparent 48%),
+ linear-gradient(110deg,#08091a,#16082e,#090c20);
+ display:flex;align-items:center;justify-content:space-between;
+ gap:20px;overflow:hidden;position:relative;
+ box-shadow:0 0 35px #7c2cff25;
+ animation:enter .8s ease both
+}
+.hero-content{z-index:2;max-width:550px}
+.hero h1{font-size:clamp(29px,4vw,42px);line-height:1.2;margin-bottom:18px}
+.hero h1 span{
+ background:linear-gradient(90deg,#a64bff,#e18bff,#62eaff);
+ background-size:200%;color:transparent; 
+ -webkit-background-clip:text;background-clip:text; 
+ animation:gradient 5s linear infinite
+}
+.hero p{color:#d3c9e8;line-height:1.8;margin-bottom:22px}
+.hero-buttons{display:flex;gap:12px;flex-wrap:wrap}
+.primary-btn,.secondary-btn{
+ padding:15px 20px;border-radius:12px;font-weight:bold;transition:.25s
+}
+.primary-btn{background:linear-gradient(120deg,#962eff,#5e22dc);color:white;box-shadow:0 0 20px #8b2cff55}
+.secondary-btn{background:#111329;border:1px solid #39335e;color:white}
+.primary-btn:hover,.secondary-btn:hover{transform:translateY(-4px);box-shadow:0 10px 25px #8b2cff66}
+
+/* 3D KINO ANIMATSIYASI */
+.hero-visual{
+ width:430px;height:290px;position:relative;flex-shrink:0;
+ display:flex;align-items:center;justify-content:center;isolation:isolate
+}
+.visual-orbit{
+ position:absolute;width:390px;height:145px;border:3px solid #963cff;
+ border-radius:50%;transform:rotate(-18deg);
+ box-shadow:0 0 15px #9b35ff,inset 0 0 15px #9b35ff;
+ animation:orbit 7s ease-in-out infinite;z-index:-1
+}
+.orbit-two{width:320px;height:115px;border-color:#35dfff;opacity:.55;animation-delay:-3s}
+.cinema-clapper{
+ position:absolute;top:45px;left:75px;width:125px;height:105px;
+ filter:drop-shadow(0 0 20px #a34bff);animation:clapper 4s ease-in-out infinite;z-index:3
+}
+.clapper-top{
+ height:28px;border-radius:9px 9px 3px 3px;
+ background:repeating-linear-gradient(135deg,#e6d8ff 0 24px,#7c39d8 24px 48px);
+ border:2px solid #b88aff;transform:rotate(-8deg)
+}
+.clapper-body{
+ height:76px;margin-top:3px;border-radius:5px 5px 13px 13px;
+ display:flex;align-items:center;justify-content:center;color:white;font-size:35px;
+ background:linear-gradient(145deg,#8d62c9,#38205e);border:2px solid #a77bff
+}
+.popcorn-box{
+ position:absolute;right:65px;bottom:35px;width:115px;height:125px;
+ background:repeating-linear-gradient(90deg,#ff2674 0 23px,#ffd1ed 23px 46px);
+ clip-path:polygon(0 0,100% 0,85% 100%,15% 100%);
+ filter:drop-shadow(0 0 20px #ff2788);animation:popcornFloat 4s infinite
+}
+.popcorn{position:absolute;top:-42px;left:4px;font-size:75px;animation:bounce 3s infinite}
+.floating-film{position:absolute;right:15px;top:35px;font-size:48px;animation:filmSpin 7s infinite}
+.visual-star{position:absolute;color:#e5c5ff;font-size:27px;text-shadow:0 0 15px #c084fc;animation:twinkle 2s infinite alternate}
+.star-one{top:25px;right:115px}.star-two{bottom:25px;left:45px}.star-three{top:145px;right:5px}
+
+@keyframes orbit{50%{transform:rotate(-8deg) scale(1.06)}}
+@keyframes clapper{50%{transform:translateY(-13px) rotate(3deg)}}
+@keyframes popcornFloat{50%{transform:translateY(-12px) rotate(-3deg)}}
+@keyframes bounce{50%{transform:translateY(-7px)}}
+@keyframes filmSpin{50%{transform:rotate(12deg) translateY(-12px)}}
+@keyframes twinkle{to{opacity:1;transform:scale(1.2)}}
+@keyframes gradient{to{background-position:200%}}
+@keyframes enter{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* KATALOG */
+.search-area{margin:22px 0 15px}
+.filter-row{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:12px;margin:15px 0 20px;flex-wrap:wrap
+}
+.tabs{display:flex;gap:10px;flex-wrap:wrap}
+.tab,.sort-select{
+ padding:12px 17px;background:var(--card);color:var(--text);
+ border:1px solid var(--border);border-radius:12px
+}
+.tab.active{background:linear-gradient(120deg,#9b31ff,#6422dc);color:white}
+.film-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px}
+.film-card{
+ --glow:#a42cff;--c1:#3b0764;--c2:#ec168b;
+ background:var(--card);border:1px solid var(--glow);
+ border-radius:18px;overflow:hidden;transition:.3s;
+ box-shadow:0 0 15px #8b2cff22;animation:enter .5s both
+}
+.film-card:hover{transform:translateY(-9px) scale(1.015);box-shadow:0 0 30px var(--glow)}
+.film-poster{
+ height:210px;position:relative;display:flex;align-items:center;justify-content:center;
+ background:radial-gradient(ellipse at 50% 80%,var(--c2),transparent 65%),linear-gradient(140deg,var(--c1),#080b1d);
+ overflow:hidden;border-bottom:1px solid var(--glow)
+}
+.film-poster:before{
+ content:"";position:absolute;width:140%;height:90px;bottom:-45px;
+ border:1px solid var(--glow);border-radius:50%;transform:rotate(-12deg);
+ box-shadow:0 0 20px var(--glow);animation:orbit 8s infinite
+}
+.film-number{
+ position:absolute;left:15px;top:15px;font-size:25px;font-weight:900;
+ color:var(--glow);border:2px solid var(--glow);border-radius:9px;padding:4px 8px;background:#08091b99
+}
+.film-type{position:absolute;right:15px;top:17px;background:#08091b99;border:1px solid var(--glow);color:white;border-radius:20px;padding:6px 12px;font-size:12px}
+.poster-icon{font-size:75px;filter:drop-shadow(0 0 15px var(--glow));animation:bounce 4s infinite}
+.poster-play{
+ position:absolute;top:53%;left:50%;transform:translate(-50%,-50%);
+ width:58px;height:58px;border-radius:50%;background:#08091bbd;color:white;
+ border:1px solid var(--glow);font-size:25px;box-shadow:0 0 18px var(--glow)
+}
+.poster-play:hover{background:var(--glow);transform:translate(-50%,-50%) scale(1.15)}
+.film-info{padding:16px}
+.film-info h3{font-size:16px;line-height:1.5;min-height:46px}
+.film-info p{color:var(--muted);font-size:13px;margin:8px 0 15px}
+.card-actions{display:flex;align-items:center;gap:10px}
+.watch-btn{flex:1;padding:13px 8px;border-radius:10px;background:linear-gradient(120deg,var(--glow),#4d24d9);color:white;font-weight:bold}
+.fav-btn{width:48px;height:44px;border-radius:10px;background:transparent;border:1px solid var(--border);color:var(--text);font-size:22px}
+.fav-btn.selected{color:#ff3c83;border-color:#ff3c83}
+.empty{grid-column:1/-1;padding:50px;text-align:center;color:var(--muted)}
+
+/* PREMIUM */
+.premium-banner{
+ display:flex;align-items:center;justify-content:space-between;gap:20px;
+ margin:28px 0 35px;padding:22px 25px;border:1px solid #8a31ff;
+ border-radius:15px;background:linear-gradient(100deg,#160a30,#10152b,#240d42);
+ box-shadow:0 0 25px #842aff22;overflow:hidden
+}
+.premium-banner-left{display:flex;align-items:center;gap:20px}
+.premium-star{font-size:42px;color:#d64aff}
+.premium-banner h3{margin-bottom:7px}
+.premium-banner p{color:#b6b2cc;font-size:13px}
+.premium-banner button,.modal-main-btn{
+ padding:14px 20px;background:linear-gradient(120deg,#922cff,#d32cff);
+ color:white;border-radius:10px;font-weight:bold
+}
+
+/* MODALLAR */
+.modal{
+ display:none;position:fixed;inset:0;z-index:100;background:#000d;
+ backdrop-filter:blur(9px);align-items:center;justify-content:center;padding:15px
+}
+.modal.show{display:flex}
+.modal-box{
+ width:100%;max-width:760px;max-height:90vh;overflow-y:auto;
+ padding:28px;border-radius:22px;background:var(--panel);color:var(--text);
+ border:1px solid var(--border);position:relative;box-shadow:0 0 40px #822cff55;
+ animation:enter .3s ease
+}
+.close{position:absolute;right:17px;top:14px;width:39px;height:39px;border-radius:50%;background:#28283d;color:white;font-size:25px}
+.modal-box h2{margin:5px 45px 15px 0}
+.category-label{display:inline-block;padding:8px 13px;border-radius:20px;background:#342052;color:#d3a8ff;font-size:13px;margin-bottom:18px}
+.modal-description{color:var(--muted);line-height:1.7;margin-bottom:18px}
+.video-container{width:100%;aspect-ratio:16/9;background:black;border-radius:14px;overflow:hidden;margin-bottom:17px}
+.video-container iframe{width:100%;height:100%;border:0}
+.modal-fav{background:#302b3e;color:white;padding:13px 20px;border-radius:25px}
+.modal-fav.active{color:#ff4b91}
+.other-title{margin:28px 0 12px;color:#b58bff;font-size:13px;letter-spacing:2px}
+.other-films{display:flex;gap:10px;flex-wrap:wrap}
+.other-film{padding:11px 14px;border-radius:10px;background:linear-gradient(120deg,#7425d9,#a42bff);color:white}
+.reviews{border-top:1px solid var(--border);margin-top:28px;padding-top:25px}
+.review-subtitle{color:var(--muted);font-size:13px;margin:8px 0 15px}
+.review-form{padding:15px;background:var(--card);border:1px solid var(--border);border-radius:13px}
+.review-form input,.review-form textarea,.login-input{
+ width:100%;padding:13px;margin-bottom:10px;border-radius:9px;
+ border:1px solid var(--border);background:var(--bg);color:var(--text);outline:none
+}
+.review-form textarea{min-height:90px;resize:vertical}
+.review-submit{padding:12px 18px;background:#8b2cff;color:white;border-radius:9px}
+.review-list{display:flex;flex-direction:column;gap:12px;margin-top:17px}
+.review-item{padding:15px;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.review-top{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px}
+.review-name{color:#bd8aff;font-weight:bold}
+.review-date{font-size:11px;color:var(--muted)}
+.review-text{line-height:1.5;overflow-wrap:anywhere}
+.delete-review{background:none;color:#fb7185;margin-top:10px}
+.no-reviews{padding:20px;text-align:center;color:var(--muted)}
+.modal-main-btn{width:100%;margin-top:10px}
+.premium-content{text-align:center;padding:20px 5px}
+.crown{font-size:65px;margin-bottom:15px}
+.premium-content p{color:var(--muted);margin:14px 0;line-height:1.6}
+footer{text-align:center;border-top:1px solid var(--border);color:var(--muted);padding:30px;margin-top:30px}
+
+@media(max-width:1280px){.film-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:1100px){.film-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.top-search{order:3;width:100%}}
+@media(max-width:900px){.hero-visual{zoom:.9}}
+@media(max-width:700px){
+ .container{width:92%}
+ header{padding:12px 4%;min-height:auto}
+ .logo{font-size:24px}
+ .film-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .film-poster{height:165px}.poster-icon{font-size:60px}
+ .hero{flex-direction:column;align-items:stretch;padding:24px 20px;min-height:auto}
+ .hero-visual{margin:10px auto 0;zoom:.85}
+ .cinema-clapper{left:35px}.popcorn-box{right:35px}
+ .premium-banner{flex-direction:column;align-items:flex-start}
+ .modal{padding:10px}
+ .modal-box{padding:22px 15px;max-height:92vh;max-height:92dvh}
+}
+@media(max-width:520px){
+ .film-grid{grid-template-columns:1fr}
+ .hero-visual{zoom:.68}
+ .hero{padding:22px 18px}
+ .header-actions{width:100%;justify-content:space-between}
+ .header-actions button,.header-actions select{padding:10px 12px;font-size:14px}
+ .user-label{width:100%;order:-1}
+ .filter-row{flex-direction:column;align-items:stretch}
+ .tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+ .tab{white-space:nowrap;flex-shrink:0}
+ .sort-select{width:100%}
+ .hero-buttons .primary-btn,.hero-buttons .secondary-btn{flex:1 1 100%;text-align:center}
+ .premium-banner button{width:100%}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+
+<body>
+<header>
+ <div class="logo">🎬<span>Cine</span>Spot</div>
+ <div class="top-search"><input id="topSearch" placeholder="Film nomini qidiring..."></div>
+ <div class="header-actions">
+  <span class="user-label" id="userLabel">Mehmon</span>
+  <button onclick="toggleTheme()" id="themeBtn">☾</button>
+  <button class="premium-btn" onclick="openPremium()">👑 Premium</button>
+  <button class="login-btn" onclick="openLogin()" id="loginBtn">Kirish →</button>
+ </div>
+</header>
+
+<main class="container">
+<section class="hero">
+ <div class="hero-content">
+  <h1><span>CineSpot</span> olamiga<br>xush kelibsiz! 👋</h1>
+  <p>Sevimli anime va filmlaringizni bir joyda tomosha qiling.</p>
+  <div class="hero-buttons">
+   <button class="primary-btn" onclick="scrollToFilms()">▶ Tomosha qilishni boshlang</button>
+   <button class="secondary-btn" onclick="showInfo()">ⓘ Qanday ishlaydi?</button>
+  </div>
+ </div>
+ <div class="hero-visual">
+  <div class="visual-orbit orbit-one"></div>
+  <div class="visual-orbit orbit-two"></div>
+  <div class="visual-star star-one">✦</div>
+  <div class="visual-star star-two">✧</div>
+  <div class="visual-star star-three">✦</div>
+  <div class="cinema-clapper">
+   <div class="clapper-top"></div>
+   <div class="clapper-body">▶</div>
+  </div>
+  <div class="popcorn-box"><div class="popcorn">🍿</div></div>
+  <div class="floating-film">🎞️</div>
+ </div>
+</section>
+
+<section id="filmsSection">
+ <div class="search-area">
+  <input id="search" placeholder="⌕ Anime yoki kino nomini qidiring...">
+ </div>
+
+ <div class="filter-row">
+  <div class="tabs">
+   <button class="tab active" id="allTab" onclick="setTab('all')">▦ Barchasi</button>
+   <button class="tab" id="animeTab" onclick="setTab('anime')">🎌 Animelar</button>
+   <button class="tab" id="moviesTab" onclick="setTab('movie')">🎬 Kinolar</button>
+   <button class="tab" id="challengesTab" onclick="setTab('challenge')">🏆 Chelenjlar</button>
+   <button class="tab" id="favTab" onclick="setTab('favorites')">❤️ Sevimlilar</button>
+  </div>
+  <select class="sort-select" id="sortSelect" onchange="renderFilms()">
+   <option value="default">↕ Tartib</option>
+   <option value="az">A dan Z gacha</option>
+  </select>
+ </div>
+
+ <div class="film-grid" id="filmGrid"></div>
+</section>
+
+<section class="premium-banner">
+ <div class="premium-banner-left">
+  <div class="premium-star">☆</div>
+  <div><h3>CineSpot Premium</h3><p>Maxsus Premium maqomi va qo‘shimcha imkoniyatlar.</p></div>
+ </div>
+ <button onclick="openPremium()">👑 Premiumga o‘tish →</button>
+</section>
+</main>
+
+<footer>
+ <div class="logo"><span>Cine</span>Spot</div>
+ <p style="margin-top:10px">© 2026 CineSpot — Anime va Kinolar</p>
+</footer>
+
+<!-- VIDEO VA SHARHLAR -->
+<div class="modal" id="filmModal" onclick="outsideClose(event,'filmModal')">
+ <div class="modal-box">
+  <button class="close" onclick="closeModal('filmModal')">×</button>
+  <h2 id="modalTitle"></h2>
+  <span class="category-label" id="modalCategory">Anime</span>
+  <p class="modal-description" id="modalDesc"></p>
+  <div class="video-container">
+   <iframe id="videoFrame" src="" title="CineSpot video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  </div>
+  <button class="modal-fav" id="modalFav" onclick="toggleCurrentFavorite()">♡ Sevimlilarga</button>
+  <div class="other-title">BOSHQA VIDEOLAR</div>
+  <div class="other-films" id="otherFilms"></div>
+  <section class="reviews">
+   <h3>💬 Sharhlar</h3>
+   <p class="review-subtitle">Video haqida fikringizni yozing.</p>
+   <div class="review-form">
+    <input id="reviewName" placeholder="Ismingiz yoki taxallusingiz" maxlength="25">
+    <textarea id="reviewText" placeholder="Sharhingizni yozing..." maxlength="500"></textarea>
+    <button class="review-submit" onclick="addReview()">✉ Sharhni yuborish</button>
+   </div>
+   <div class="review-list" id="reviewList"></div>
+  </section>
+ </div>
+</div>
+
+<!-- KIRISH -->
+<div class="modal" id="loginModal" onclick="outsideClose(event,'loginModal')">
+ <div class="modal-box">
+  <button class="close" onclick="closeModal('loginModal')">×</button>
+  <h2>👤 CineSpot — ro‘yxatdan o‘tish</h2>
+  <p class="modal-description">Videolarni tomosha qilish uchun avval taxallusingizni kiriting.</p>
+  <input class="login-input" id="nickname" placeholder="Masalan: Behruz" maxlength="20">
+  <button class="modal-main-btn" onclick="registerUser()">Ro‘yxatdan o‘tish</button>
+ </div>
+</div>
+
+<!-- PREMIUM -->
+<div class="modal" id="premiumModal" onclick="outsideClose(event,'premiumModal')">
+ <div class="modal-box">
+  <button class="close" onclick="closeModal('premiumModal')">×</button>
+  <div class="premium-content">
+   <div class="crown">👑</div><h2>CineSpot Premium</h2>
+   <p>Premium rejim — hozircha demo imkoniyat.</p>
+   <p>✨ Maxsus Premium belgisi</p>
+   <p>💜 Premium foydalanuvchi maqomi</p>
+   <p>🎬 Sevimli videolarni saqlash</p>
+   <button class="modal-main-btn" id="premiumAction" onclick="activatePremium()">Premiumni faollashtirish</button>
+  </div>
+ </div>
+</div>
+
+<script>
+const FILMS=[
+ {t:"1000 yillik qasos",yt:"7tDmK20Mimg",desc:"1000 yillik qasos — anime.",glow:"#a855f7",c1:"#210b45",c2:"#7134b8"},
+ {t:"Salom, men jodugarman — 1-qism",yt:"p0xSZmMjPmI",desc:"Birinchi qism.",glow:"#ff36b9",c1:"#30075d",c2:"#d51d85"},
+ {t:"Salom, men jodugarman — 2-qism",yt:"zQdGY9c03kU",desc:"Ikkinchi qism.",glow:"#ff9500",c1:"#702000",c2:"#ed5700"},
+ {t:"Salom, men jodugarman — 3-qism",yt:"moI-wkCs4jc",desc:"Uchinchi qism.",glow:"#00d9ed",c1:"#003b57",c2:"#008ca7"},
+ {t:"Salom, men jodugarman — 4-qism",yt:"8EfxKCCwa-g",desc:"To‘rtinchi qism.",glow:"#ad42ff",c1:"#350878",c2:"#8c26e9"},
+ {t:"Teskari dunyo",yt:"o1yrMGXRLss",desc:"Teskari dunyo — anime.",glow:"#ff286f",c1:"#3b003c",c2:"#d60047"},
+ {t:"SSS darajali yer — 1-qism",yt:"lLZXLt1ZbZA",desc:"Birinchi qism.",glow:"#00e5ff",c1:"#042b50",c2:"#087eaa"},
+ {t:"SSS darajali yer — 2-qism",yt:"EmwPY6Kias4",desc:"Ikkinchi qism.",glow:"#ffb000",c1:"#542000",c2:"#d85b00"},
+ {t:"Ovoz shakli",yt:"P-q5QkdsNE8",desc:"Ovoz shakli — anime.",glow:"#8b5cf6",c1:"#21104f",c2:"#7c3aed"},
+ {t:"Seni sevadigan yagona inson",yt:"wTieu4TAyag",desc:"Seni sevadigan yagona inson.",glow:"#ff5c9a",c1:"#4b102d",c2:"#d63384"},
+ {t:"Osmon ustida",yt:"Pp2gq14ktOQ",desc:"Osmon ustida — anime.",glow:"#38bdf8",c1:"#082f49",c2:"#0284c7"},
+ {t:"Suzume",yt:"XPYarcAp5ow",desc:"Suzume — anime.",glow:"#f59e0b",c1:"#422006",c2:"#ea580c"},
+ {t:"Xudo asrasin",yt:"KXJXAdZNrAU",desc:"Xudo asrasin — kino.",type:"movie",glow:"#ffb52e",c1:"#542600",c2:"#e87916"},
+ {t:"Ekstrimal kvest 1 qism",yt:"EVY3AijYinc",desc:"Ekstrimal kvest — 1-qism.",type:"challenge",glow:"#f97316",c1:"#431407",c2:"#c2410c"},
+ {t:"Ekstrimal kvest 2 qism",yt:"MyvlGDL5Gcs",desc:"Ekstrimal kvest — 2-qism.",type:"challenge",glow:"#ef4444",c1:"#450a0a",c2:"#b91c1c"},
+ {t:"Kim oxirgi bo‘lib uhlasa yutqazadi",yt:"0PbERlUWzd8",desc:"Ko‘ngilochar video. Uyquni ataylab kechiktirish tavsiya etilmaydi.",type:"challenge",glow:"#f59e0b",c1:"#422006",c2:"#b45309"}
+];
+
+let favorites=JSON.parse(localStorage.getItem("cs_fav")||"[]");
+let reviews=JSON.parse(localStorage.getItem("cs_reviews")||"{}");
+let currentTab="all";
+let currentUser=localStorage.getItem("cs_user")||"";
+let isPremium=localStorage.getItem("cs_premium")==="true";
+let currentFilmIndex=null;
+
+function toggleTheme(){
+ document.body.classList.toggle("light");
+ let light=document.body.classList.contains("light");
+ localStorage.setItem("cs_theme",light?"light":"dark");
+ document.getElementById("themeBtn").textContent=light?"☀":"☾";
+}
+if(localStorage.getItem("cs_theme")==="light"){
+ document.body.classList.add("light");
+ document.getElementById("themeBtn").textContent="☀";
+}
+
+function updateUser(){
+ document.getElementById("userLabel").textContent=(isPremium&&currentUser?"👑 ":"")+(currentUser||"Mehmon");
+ document.getElementById("loginBtn").textContent=currentUser?"Chiqish →":"Kirish →";
+}
+function openLogin(){
+ if(currentUser){
+  if(confirm("Hisobdan chiqmoqchimisiz?")){
+   currentUser="";isPremium=false;
+   localStorage.removeItem("cs_user");localStorage.removeItem("cs_premium");
+   updateUser();
+   document.getElementById("loginModal").classList.add("show");
+   document.body.style.overflow="hidden";
+   document.querySelector("#loginModal .close").style.display="none";
+  }
+ }else{
+  document.getElementById("loginModal").classList.add("show");
+  document.body.style.overflow="hidden";
+  document.querySelector("#loginModal .close").style.display="none";
+ }
+}
+function registerUser(){
+ let name=document.getElementById("nickname").value.trim();
+ if(name.length<2){alert("Taxallus kamida 2 ta belgidan iborat bo‘lsin!");return}
+ currentUser=name;localStorage.setItem("cs_user",name);
+ updateUser();
+ document.getElementById("loginModal").classList.remove("show");
+ document.body.style.overflow="";
+ document.querySelector("#loginModal .close").style.display="";
+ alert("Xush kelibsiz, "+name+"! Endi videolarni tomosha qilishingiz mumkin.");
+}
+function openPremium(){
+ document.getElementById("premiumModal").classList.add("show");
+ document.getElementById("premiumAction").textContent=isPremium?"Premium faol ✓":"Premiumni faollashtirish";
+}
+function activatePremium(){
+ if(!currentUser){alert("Avval ro‘yxatdan o‘ting!");closeModal("premiumModal");openLogin();return}
+ isPremium=true;localStorage.setItem("cs_premium","true");updateUser();
+ document.getElementById("premiumAction").textContent="Premium faol ✓";
+ alert("Demo Premium faollashtirildi!");
+}
+
+function closeModal(id){
+ if(id==="loginModal"&&!currentUser)return;
+ document.getElementById(id).classList.remove("show");
+ if(id==="loginModal")document.body.style.overflow="";
+ if(id==="filmModal"){
+  document.getElementById("videoFrame").src="";
+  currentFilmIndex=null;
+ }
+}
+function outsideClose(e,id){
+ if(e.target.id===id){
+  if(id==="loginModal"&&!currentUser)return;
+  closeModal(id);
+ }
+}
+
+function openFilm(index){
+ if(!currentUser){
+  alert("Videolarni ko‘rish uchun avval ro‘yxatdan o‘ting!");
+  openLogin();
+  return;
+ }
+ let film=FILMS[index];currentFilmIndex=index;
+ document.getElementById("modalTitle").textContent=film.t;
+ document.getElementById("modalDesc").textContent=film.desc;
+ document.getElementById("modalCategory").textContent=film.type==="challenge"?"🏆 Chelenj":(film.type==="movie"?"🎬 Kino":"🎌 Anime");
+ document.getElementById("videoFrame").src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(film.yt)+"?autoplay=1&playsinline=1&rel=0";
+ document.getElementById("filmModal").classList.add("show");
+ document.getElementById("reviewName").value=currentUser;
+ updateModalFavorite();renderOtherFilms();renderReviews();
+}
+
+function toggleFavorite(index){
+ if(favorites.includes(index))favorites=favorites.filter(x=>x!==index);
+ else favorites.push(index);
+ localStorage.setItem("cs_fav",JSON.stringify(favorites));
+ renderFilms();updateModalFavorite();
+}
+function toggleCurrentFavorite(){if(currentFilmIndex!==null)toggleFavorite(currentFilmIndex)}
+function updateModalFavorite(){
+ if(currentFilmIndex===null)return;
+ let active=favorites.includes(currentFilmIndex);
+ let btn=document.getElementById("modalFav");
+ btn.textContent=active?"♥ Sevimlilarda":"♡ Sevimlilarga";
+ btn.classList.toggle("active",active);
+}
+function renderOtherFilms(){
+ let box=document.getElementById("otherFilms");box.innerHTML="";
+ FILMS.forEach((film,i)=>{
+  if(i===currentFilmIndex)return;
+  let btn=document.createElement("button");btn.className="other-film";
+  btn.textContent=film.t;btn.onclick=()=>openFilm(i);
+  box.appendChild(btn);
+ });
+}
+
+function getOwner(){
+ let owner=localStorage.getItem("cs_review_owner");
+ if(!owner){owner="owner-"+Math.random().toString(36).slice(2);localStorage.setItem("cs_review_owner",owner)}
+ return owner;
+}
+function renderReviews(){
+ let list=document.getElementById("reviewList");list.innerHTML="";
+ if(currentFilmIndex===null)return;
+ let data=reviews[currentFilmIndex]||[];
+ if(!data.length){list.innerHTML='<div class="no-reviews">Hozircha sharhlar yo‘q. Birinchi bo‘lib yozing!</div>';return}
+ data.forEach((r,i)=>{
+  let item=document.createElement("div");item.className="review-item";
+  let top=document.createElement("div");top.className="review-top";
+  let name=document.createElement("span");name.className="review-name";name.textContent="👤 "+r.name;
+  let date=document.createElement("span");date.className="review-date";date.textContent=r.date;
+  top.append(name,date);
+  let message=document.createElement("p");message.className="review-text";message.textContent=r.text;
+  item.append(top,message);
+  if(r.owner===getOwner()){
+   let del=document.createElement("button");del.className="delete-review";
+   del.textContent="🗑 Sharhni o‘chirish";del.onclick=()=>deleteReview(i);
+   item.appendChild(del);
+  }
+  list.appendChild(item);
+ });
+}
+function addReview(){
+ if(currentFilmIndex===null)return;
+ let name=document.getElementById("reviewName").value.trim();
+ let text=document.getElementById("reviewText").value.trim();
+ if(name.length<2){alert("Ismingizni kiriting!");return}
+ if(text.length<3){alert("Sharh juda qisqa!");return}
+ if(!reviews[currentFilmIndex])reviews[currentFilmIndex]=[];
+ reviews[currentFilmIndex].unshift({
+  name,text,date:new Date().toLocaleDateString("uz-UZ"),owner:getOwner()
+ });
+ localStorage.setItem("cs_reviews",JSON.stringify(reviews));
+ document.getElementById("reviewText").value="";
+ renderReviews();alert("Sharhingiz saqlandi!");
+}
+function deleteReview(index){
+ if(!confirm("Sharhni o‘chirmoqchimisiz?"))return;
+ reviews[currentFilmIndex].splice(index,1);
+ localStorage.setItem("cs_reviews",JSON.stringify(reviews));renderReviews();
+}
+
+/* QIDIRUV VA BO‘LIMLAR */
+function syncSearch(){
+ let value=document.getElementById("search").value;
+ document.getElementById("topSearch").value=value;
+ renderFilms();
+}
+document.getElementById("search").addEventListener("input",syncSearch);
+document.getElementById("topSearch").addEventListener("input",function(){
+ document.getElementById("search").value=this.value;
+ renderFilms();
+});
+
+function setTab(tab){
+ currentTab=tab;
+ document.getElementById("allTab").classList.toggle("active",tab==="all");
+ document.getElementById("animeTab").classList.toggle("active",tab==="anime");
+ document.getElementById("moviesTab").classList.toggle("active",tab==="movie");
+ document.getElementById("challengesTab").classList.toggle("active",tab==="challenge");
+ document.getElementById("favTab").classList.toggle("active",tab==="favorites");
+ renderFilms();
+}
+
+function renderFilms(){
+ let grid=document.getElementById("filmGrid");
+ let query=document.getElementById("search").value.toLowerCase();
+ let sort=document.getElementById("sortSelect").value;
+ grid.innerHTML="";
+ let indexes=FILMS.map((film,i)=>i);
+ if(sort==="az")indexes.sort((a,b)=>FILMS[a].t.localeCompare(FILMS[b].t));
+ let found=0;
+
+ indexes.forEach(index=>{
+  let film=FILMS[index];
+  if(!film.t.toLowerCase().includes(query))return;
+  if(currentTab==="favorites"&&!favorites.includes(index))return;
+  if(currentTab==="anime"&&film.type && film.type!=="anime")return;
+  if(currentTab==="movie"&&film.type!=="movie")return;
+  if(currentTab==="challenge"&&film.type!=="challenge")return;
+
+  found++;
+  let card=document.createElement("article");card.className="film-card";
+  card.style.setProperty("--glow",film.glow);
+  card.style.setProperty("--c1",film.c1);
+  card.style.setProperty("--c2",film.c2);
+
+  let poster=document.createElement("div");poster.className="film-poster";
+  let number=document.createElement("span");number.className="film-number";
+  number.textContent=String(index+1).padStart(2,"0");
+
+  let type=document.createElement("span");type.className="film-type";
+  type.textContent=film.type==="challenge"?"Chelenj":(film.type==="movie"?"Kino":"Anime");
+
+  let icon=document.createElement("span");icon.className="poster-icon";
+  icon.textContent=film.type==="challenge"?"🏆":(film.type==="movie"?"🎥":"🎬");
+
+  let play=document.createElement("button");play.className="poster-play";
+  play.textContent="▶";play.onclick=()=>openFilm(index);
+  poster.append(number,type,icon,play);
+
+  let info=document.createElement("div");info.className="film-info";
+  let title=document.createElement("h3");title.textContent=film.t;
+  let genre=document.createElement("p");
+  genre.textContent=film.type==="challenge"?"🏆 Chelenj • CineSpot":(film.type==="movie"?"🎬 Kino • CineSpot":"🎌 Anime • CineSpot");
+
+  let actions=document.createElement("div");actions.className="card-actions";
+  let watch=document.createElement("button");watch.className="watch-btn";
+  watch.textContent="▶ Tomosha qilish";watch.onclick=()=>openFilm(index);
+
+  let fav=document.createElement("button");fav.className="fav-btn";
+  fav.textContent=favorites.includes(index)?"♥":"♡";
+  if(favorites.includes(index))fav.classList.add("selected");
+  fav.onclick=()=>toggleFavorite(index);
+
+  actions.append(watch,fav);
+  info.append(title,genre,actions);
+  card.append(poster,info);
+  grid.appendChild(card);
+ });
+
+ if(!found)grid.innerHTML='<div class="empty">😕 Bu bo‘limda hozircha video topilmadi.</div>';
+}
+
+function scrollToFilms(){document.getElementById("filmsSection").scrollIntoView({behavior:"smooth"})}
+function showInfo(){alert("CineSpot — anime va kinolarni ko‘rish, sevimlilarga qo‘shish va sharh yozish uchun yaratilgan sayt.")}
+
+updateUser();
+renderFilms();
+if(!currentUser){
+ document.getElementById("loginModal").classList.add("show");
+ document.body.style.overflow="hidden";
+ document.querySelector("#loginModal .close").style.display="none";
+}
+</script>
+</body>
+</html>
